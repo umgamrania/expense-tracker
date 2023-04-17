@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #181818;
+            color: #ccc;
+            font-family: "Work Sans";
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        ::-webkit-inner-outer-button,
+        ::-webkit-inner-spin-button {
+            display: none;
+        }
+
+        .summery {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            margin-top: 60px;
+            text-align: center;
+            color: rgb(231, 221, 167);
+        }
+
+        .summery>* {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .summery>*>h1 {
+            font-weight: 500;
+            margin: 0;
+            font-size: 50px;
+        }
+
+        .add-expense {
+            display: flex;
+            flex-direction: column;
+            width: 70%;
+            margin-left: 15%;
+            margin-top: 50px;
+        }
+
+        .add-expense input {
+            /* background: transparent; */
+            border: none;
+            outline: none;
+            font: inherit;
+            border-bottom: 1px solid #444;
+        }
+
+        .add-expense input[type="text"],
+        .add-expense input[type="number"] {
+            background: transparent;
+            padding: 20px;
+            color: #ccc;
+            transition: border 0.2s ease;
+        }
+
+        .add-expense input[type="text"]:focus,
+        .add-expense input[type="number"]:focus {
+            border-bottom: 1px solid rgb(247, 232, 152);
+        }
+
+        .add-expense input[type="submit"] {
+            padding: 20px;
+            margin-top: 20px;
+            background: #312f1d;
+            border: none;
+            color: rgb(231, 221, 167);
+            font-weight: 700;
+            font-size: 20px;
+            border-radius: 10px;
+        }
+
+        .add-expense .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .add-expense .btn-container .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgb(42, 38, 20);
+            height: 60px;
+            border-radius: 10px;
+            flex: 1;
+            transition: 0.2s ease;
+        }
+
+        .add-expense .btn-container .btn.add {
+            flex: 2;
+        }
+
+        .add-expense .btn-container .btn svg {
+            height: 25px;
+            filter: invert(0.8);
+        }
+
+        .is-petrol,
+        .is-study {
+            display: none;
+        }
+
+        .is-study:checked~.btn.study,
+        .is-petrol:checked~.btn.petrol {
+            background: rgb(153, 137, 44);
+        }
+
+        .filters {
+            margin-top: 50px;
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .filters label {
+            padding: 15px 20px;
+            background: #222;
+            border-radius: 10px;
+            transition: 0.2s ease;
+        }
+
+        .filter {
+            display: none;
+        }
+
+        .filter.all:checked~.label-filter-all,
+        .filter.petrol:checked~.label-filter-petrol,
+        .filter.study:checked~.label-filter-study {
+            background: rgb(153, 137, 44);
+        }
+
+        .expenses {
+            width: 80%;
+            margin-top: 30px;
+            margin-left: 10%;
+        }
+
+        .expense {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 0;
+            border-bottom: 1px solid #444;
+        }
+
+        .expense:nth-last-child(1) {
+            border: none;
+        }
+
+        .expense * {
+            margin: 0;
+        }
+
+        .expense .left .title {
+            font-size: 20px;
+        }
+
+        .expense .left .date {
+            font-size: 15px;
+            margin-top: 7px;
+            opacity: 0.7;
+        }
+
+        .expense .right p {
+            font-size: 30px;
+        }
+
+        #clear-all {
+            display: inline-block;
+            background: #312f1d;
+            padding: 20px;
+            margin: 30px 0;
+            margin-left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+    <link rel="shortcut icon" href="http://192.168.10.21:5500/icon.png" type="image/x-icon">
+</head>
+
+<body>
+    <div class="summery">
+        <div class="left">
+            <p>This Month</p>
+            <h1 id="total-amt">₹0</h1>
+        </div>
+        <div class="right">
+            <p>Petrol</p>
+            <h1 id="total-petrol">₹0</h1>
+        </div>
+    </div>
+
+    <div class="add-expense">
+        <input type="text" name="title" id="title" placeholder="Enter title">
+        <input type="number" name="amount" id="amount" placeholder="Enter amount">
+        <div class="btn-container">
+            <input type="radio" name="expense-type" value="petrol" id="is-petrol" class="is-petrol">
+            <input type="radio" name="expense-type" value="study" id="is-study" class="is-study">
+            <label class="btn petrol" for="is-petrol">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 512 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                        d="M32 64C32 28.7 60.7 0 96 0H256c35.3 0 64 28.7 64 64V256h8c48.6 0 88 39.4 88 88v32c0 13.3 10.7 24 24 24s24-10.7 24-24V222c-27.6-7.1-48-32.2-48-62V96L384 64c-8.8-8.8-8.8-23.2 0-32s23.2-8.8 32 0l77.3 77.3c12 12 18.7 28.3 18.7 45.3V168v24 32V376c0 39.8-32.2 72-72 72s-72-32.2-72-72V344c0-22.1-17.9-40-40-40h-8V448c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32V64zM96 80v96c0 8.8 7.2 16 16 16H240c8.8 0 16-7.2 16-16V80c0-8.8-7.2-16-16-16H112c-8.8 0-16 7.2-16 16z" />
+                </svg>
+            </label>
+            <label class="btn study" for="is-study">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 576 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                        d="M249.6 471.5c10.8 3.8 22.4-4.1 22.4-15.5V78.6c0-4.2-1.6-8.4-5-11C247.4 52 202.4 32 144 32C93.5 32 46.3 45.3 18.1 56.1C6.8 60.5 0 71.7 0 83.8V454.1c0 11.9 12.8 20.2 24.1 16.5C55.6 460.1 105.5 448 144 448c33.9 0 79 14 105.6 23.5zm76.8 0C353 462 398.1 448 432 448c38.5 0 88.4 12.1 119.9 22.6c11.3 3.8 24.1-4.6 24.1-16.5V83.8c0-12.1-6.8-23.3-18.1-27.6C529.7 45.3 482.5 32 432 32c-58.4 0-103.4 20-123 35.6c-3.3 2.6-5 6.8-5 11V456c0 11.4 11.7 19.3 22.4 15.5z" />
+                </svg>
+            </label>
+            <div class="btn add" id="add">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"><!--! Font Awesome Pro 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                        d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z" />
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters">
+        <input type="radio" name="filter" class="filter all" id="filter-all" checked>
+        <input type="radio" name="filter" class="filter petrol" id="filter-petrol">
+        <input type="radio" name="filter" class="filter study" id="filter-study">
+
+        <label onclick="show_all()" class="label label-filter-all" for="filter-all">All</label>
+        <label onclick="filter_petrol()" class="label label-filter-petrol" for="filter-petrol">Petrol</label>
+        <label onclick="filter_study()" class="label label-filter-study" for="filter-study">Study</label>
+    </div>
+
+    <div class="expenses" id="expense-container">
+
+    </div>
+
+    <a id="clear-all" onclick="delete_all()">Clear all</a>
+
+    <script>
+        let expenses = [];
+
+        const title = document.getElementById("title");
+        const amount = document.getElementById("amount");
+        const petrol = document.getElementById("is-petrol");
+        const study = document.getElementById("is-study");
+        const add_btn = document.getElementById("add");
+        const expense_container = document.getElementById("expense-container");
+        const total_amt = document.getElementById("total-amt");
+        const total_petrol = document.getElementById("total-petrol");
+
+        window.onload = function () {
+            if (localStorage.getItem("expense")) {
+                expenses = JSON.parse(localStorage.getItem("expense"));
+                expenses.toReversed().forEach(element => {
+                    add_to_list(element);
+                });
+                update_total();
+            }
+        }
+
+        title.onchange = function () {
+            if (title.value.toLowerCase().search("petrol") != -1)
+                petrol.checked = true;
+        }
+
+        function add_to_list(expense) {
+            const element = document.createElement("div");
+            const left = document.createElement("div");
+            const right = document.createElement("div");
+            const title = document.createElement("p");
+            const date = document.createElement("p");
+            const amount = document.createElement("p");
+
+            element.className = "expense";
+            left.className = "left";
+            right.className = "right";
+            title.className = "title";
+            date.className = "date";
+            amount.className = "amount";
+
+            title.innerText = expense.title;
+            let parsed_date = new Date(expense.date);
+            date.innerText = parsed_date.getDate() + "/" + parsed_date.getMonth() + "/" + parsed_date.getYear();
+            amount.innerText = "₹" + expense.amount;
+
+            left.appendChild(title);
+            left.appendChild(date);
+            right.appendChild(amount);
+
+            element.appendChild(left);
+            element.appendChild(right);
+
+            expense_container.appendChild(element);
+        }
+
+        function update_total() {
+            let total = 0;
+            let total_petrol_amt = 0;
+            console.log(expenses);
+            expenses.forEach(element => {
+                total += parseInt(element.amount);
+                if (element.petrol == true) {
+                    total_petrol_amt += parseInt(element.amount);
+                }
+            });
+
+            total_amt.innerText = "₹" + total;
+            total_petrol.innerText = "₹" + total_petrol_amt;
+        }
+
+        function filter_petrol() {
+            expense_container.innerHTML = "";
+
+            expenses.toReversed().forEach(element => {
+                if (element.petrol)
+                    add_to_list(element);
+            });
+        }
+
+        function filter_study() {
+            expense_container.innerHTML = "";
+
+            expenses.toReversed().forEach(element => {
+                if (element.study)
+                    add_to_list(element);
+            });
+        }
+
+        function show_all() {
+            expense_container.innerHTML = "";
+
+            expenses.toReversed().forEach(element => {
+                add_to_list(element);
+            });
+        }
+
+        function delete_all() {
+            localStorage.clear();
+            window.location.reload();
+        }
+
+        add_btn.addEventListener("click", () => {
+            if (title.value == "" || amount.value == "") {
+                alert("Fill all details");
+            } else {
+                const expense = {
+                    title: title.value,
+                    amount: amount.value,
+                    date: new Date(),
+                    petrol: petrol.checked,
+                    study: study.checked
+                }
+
+                expenses.push(expense);
+                localStorage.setItem("expense", JSON.stringify(expenses));
+                show_all();
+                update_total();
+            }
+        });
+    </script>
+</body>
+
+</html>
